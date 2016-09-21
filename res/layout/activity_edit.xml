@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ivory" >
+
+    <!-- 布局颜色要跟主界面以及listview边框颜色相同 -->
+
+    <ImageView
+        android:id="@+id/activity_edit_left_edge"
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:contentDescription="@string/description"
+        android:scaleType="fitXY"
+        android:src="@drawable/left_edge" />
+
+    <ImageView
+        android:id="@+id/activity_edit_top_edge"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/description"
+        android:scaleType="fitXY"
+        android:src="@drawable/top_edge" />
+
+    <ImageView
+        android:id="@+id/activity_edit_right_edge"
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:contentDescription="@string/description"
+        android:scaleType="fitXY"
+        android:src="@drawable/right_edge" />
+
+    <ImageView
+        android:id="@+id/activity_edit_bottom_edge"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="@string/description"
+        android:scaleType="fitXY"
+        android:src="@drawable/bottom_edge" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/activity_edit_bottom_edge"
+        android:layout_below="@id/activity_edit_top_edge"
+        android:layout_toLeftOf="@id/activity_edit_right_edge"
+        android:layout_toRightOf="@id/activity_edit_left_edge"
+        android:orientation="vertical"
+        android:padding="15dp" >
+
+        <!-- 四周放4个边框，中间放一个总的linearlayout -->
+        <!-- 设置padding为15dp -->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2" >
+
+            <TextView
+                android:id="@+id/activity_edit_month_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/activity_edit_leftline_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/activity_edit_month_textview"
+                android:text="@string/line"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/activity_edit_week_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/activity_edit_leftline_textview"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/activity_edit_rightline_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/activity_edit_month_textview"
+                android:text="@string/line"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/activity_edit_year_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/activity_edit_rightline_textview"
+                android:textSize="13sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentBottom="true"
+                android:contentDescription="@string/description"
+                android:scaleType="fitXY"
+                android:src="@drawable/line_horizontal" />
+
+            <!-- 在年月日下面放一个横线作为编辑区与年月日的分割线 -->
+
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/activity_edit_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="14"
+            android:background="@null"
+            android:gravity="top|left"
+            android:inputType="textMultiLine"
+            android:padding="5dp"
+            android:scrollbars="@null"
+            android:textSize="13sp" />
+        <!-- 设置background为null，这样下面就不会有一条编辑框的线 -->
+        <!-- 设置gravity，文字在左上角开始 -->
+        <!-- 设置scrollbars为null，这样滑动的时候不会有显式的滚动条 -->
+
+        <RelativeLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+
+            <!-- 设置子布局和子控件的style属性 -->
+
+            <Button
+                android:id="@+id/activity_edit_time_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="Time" />
+
+            <Button
+                android:id="@+id/activity_edit_save_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="Save" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

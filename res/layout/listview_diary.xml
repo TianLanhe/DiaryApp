@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_main_listview_diary_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ivory"
+    android:orientation="horizontal"
+    android:padding="2dp" >
+
+    <!-- padding留白不至于两条item之间紧密相连 -->
+    <!-- 外边框颜色要跟主界面颜色相同 -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
+
+        <!-- 内边框颜色设为黑色模拟边线 -->
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="0.5dp"
+            android:layout_marginTop="1dp"
+            android:layout_weight="2"
+            android:background="@color/ghostwhite"
+            android:orientation="vertical" >
+
+            <!-- 子布局偏移1dp模拟黑色边线 -->
+            <!-- 子布局颜色可随意设置，当要与另一个子布局颜色相同 -->
+
+            <TextView
+                android:id="@+id/listview_week_textview"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:contentDescription="@string/description"
+                android:scaleType="fitXY"
+                android:src="@drawable/line_horizontal" />
+
+            <TextView
+                android:id="@+id/listview_date_textview"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="1dp"
+            android:layout_marginLeft="0.5dp"
+            android:layout_marginRight="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_weight="9"
+            android:background="@color/ghostwhite"
+            android:padding="15dp" >
+
+            <!-- 子布局偏移1dp模拟黑色边线 -->
+            <!-- 设置padding留白不至于日记内容紧贴边框 -->
+            <!-- 子布局颜色可随意设置，当要与另一个子布局颜色相同 -->
+
+            <TextView
+                android:id="@+id/listview_content_textview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:textSize="15sp" />
+            <!-- 单行显示省略结尾 -->
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
