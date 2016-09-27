@@ -5,7 +5,7 @@
     android:background="@color/ivory" >
 
     <!--
-     	本来打算好看一点，加个边框，但发现 alertdialog大小不会跟里面的布局契合，反正很难看
+    	本来打算加个边框好看一点，不过会使alertdialog的大小很难调整，反正很难看
         <ImageView
             android:id="@+id/activity_edit_left_edge"
             android:layout_width="5dp"
@@ -45,8 +45,7 @@
 
     <ListView
         android:id="@+id/alertdialog_detail_listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-         />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

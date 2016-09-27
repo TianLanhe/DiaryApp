@@ -14,6 +14,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +23,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -34,13 +37,32 @@ import android.widget.Toast;
  */
 public class MainActivity extends Activity {
 	private ListView listview; // 列表控件
-	public static List<Diary> diarylist = null; // 一个月的日记内容
+	private ListView view_listview;
+	private ListView setting_listview;
+
+	private List<Diary> monthdiarylist=null;
+	private List<Diary> diarylist = null; // 一个月的日记内容
+	private List<View> content_view_list; // 上面主视图的三个布局
+	private List<View> button_view_list; // 下面操作视图的两个布局
+
 	private DiaryAdapter diaryadapter; // listview的适配器
+	private MonthDiaryAdapter monthdiaryadapter;
+
 	private ImageButton new_button; // 新建/编辑当日日记的按钮
 	private Button month_button; // 月份按钮
 	private Button year_button; // 年份按钮
 	private ImageButton view_button;// 切换另一视图的按钮
 	private ImageButton setting_button;// 设置按钮
+
+	private ViewPager content_viewpager;
+	private ViewPager button_viewpager;
+
+	private View diary_list_view; // 标准日记视图
+	private View setting_list_view; // 设置视图
+	private View month_diary_list_view; // 当月日记视图
+	private View button_list_view; // 标准操作视图
+	private View month_button_list_view; // 当月日记操作视图
+
 	private String[] month = { "Jan", "Feb", "Mar", "Apr", "May", "June",
 			"July", "Aug", "Sept", "Oct", "Nov", "Dec" };
 
@@ -50,15 +72,67 @@ public class MainActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);// 取消屏幕顶标题栏
 		setContentView(R.layout.activity_main); // 加载主布局
 
-		listview = (ListView) findViewById(R.id.activity_main_diary_listview);
-		initButton();
+		// 上下两个viewpager初始化
+		content_viewpager = (ViewPager) findViewById(R.id.activity_main_content_viewpager);
+		button_viewpager = (ViewPager) findViewById(R.id.activity_main_button_viewpager);
 
+		// 初始化待加入viewpager中的view
+		diary_list_view = LayoutInflater.from(this).inflate(
+				R.layout.viewpager_diary, null);
+		button_list_view = LayoutInflater.from(this).inflate(
+				R.layout.viewpager_button, null);
+		setting_list_view = LayoutInflater.from(this).inflate(
+				R.layout.viewpager_diary, null);
+		month_diary_list_view = LayoutInflater.from(this).inflate(
+				R.layout.viewpager_diary, null);
+		month_button_list_view = LayoutInflater.from(this).inflate(
+				R.layout.viewpager_month_button, null);
+
+		// 上下两个viewpager的list初始化并添加内容
+		content_view_list = new ArrayList<View>();
+		content_view_list.add(month_diary_list_view);
+		content_view_list.add(diary_list_view);
+		content_view_list.add(setting_list_view);
+
+		button_view_list = new ArrayList<View>();
+		button_view_list.add(month_button_list_view);
+		button_view_list.add(button_list_view);
+
+		// 上下两个viewpager设置适配器，传入list，设置viewpager指向初始的标准操作视图
+		content_viewpager.setAdapter(new MyPagerAdapter(content_view_list));
+		button_viewpager.setAdapter(new MyPagerAdapter(button_view_list));
+		content_viewpager.setCurrentItem(1);
+		button_viewpager.setCurrentItem(1);
+
+		listview = (ListView) diary_list_view
+				.findViewById(R.id.activity_main_diary_listview);
+		new_button = (ImageButton) button_list_view
+				.findViewById(R.id.activity_main_create_button);
+		month_button = (Button) button_list_view
+				.findViewById(R.id.activity_main_month_button);
+		year_button = (Button) button_list_view
+				.findViewById(R.id.activity_main_year_button);
+		view_button = (ImageButton) button_list_view
+				.findViewById(R.id.activity_main_view_button);
+		setting_button = (ImageButton) button_list_view
+				.findViewById(R.id.activity_main_setting_button);
+
+		view_listview=(ListView) month_diary_list_view.findViewById(R.id.activity_main_diary_listview);
+		
 		// diarylist = null; //已在成员变量定义时初始化
 		initDiaryList();// 读取当日的日期并设置按钮，读取当月的日记
 
+		// 设置listview，设置分割线为null，即无分割线，也可在xml里android:divider="@null"
 		diaryadapter = new DiaryAdapter(this, R.layout.listview_diary,
 				R.layout.listview_point, diarylist);
-		listview.setAdapter(diaryadapter); // 设置listview
+		listview.setAdapter(diaryadapter);
+		listview.setDivider(null);
+		
+		getMonthDiary();
+		Log.d("myfilter","size:"+monthdiarylist.size());
+		monthdiaryadapter=new MonthDiaryAdapter(this,R.layout.listview_detail,monthdiarylist);
+		view_listview.setAdapter(monthdiaryadapter);
+		view_listview.setDivider(null);
 
 		// new按钮单击事件
 		new_button.setOnClickListener(new OnClickListener() {
@@ -68,7 +142,8 @@ public class MainActivity extends Activity {
 				Calendar calendar = Calendar.getInstance();
 				changeDate(calendar.get(Calendar.YEAR),
 						calendar.get(Calendar.MONTH));
-				listview.setSelection(calendar.get(Calendar.DATE) - 1);// 设置listview指向某一item
+				content_viewpager.setCurrentItem(1);
+				listview.setSelection(calendar.get(Calendar.DATE) - 1);// 设置listview当天的item
 				Diary diary = diarylist.get(calendar.get(Calendar.DATE) - 1);
 				EditActivity.startEditActivityForResult(MainActivity.this,
 						diary);
@@ -100,6 +175,7 @@ public class MainActivity extends Activity {
 									View arg1, int position, long id) {
 								dialog.dismiss();
 								changeDate(diarylist.get(0).getYear(), position);
+								content_viewpager.setCurrentItem(1);
 								diaryadapter.notifyDataSetChanged();// 刷新一下listview
 							}
 						});
@@ -130,12 +206,29 @@ public class MainActivity extends Activity {
 								dialog.dismiss();
 								changeDate(position + 2010, diarylist.get(0)
 										.getMonth() - 1);
+								content_viewpager.setCurrentItem(1);
 								diaryadapter.notifyDataSetChanged();
 							}
 						});
 			}
 		});
-		
+
+		//setting按钮单击事件
+		setting_button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				content_viewpager.setCurrentItem(2);
+			}
+		});
+
+		//视图切换按钮单击事件
+		view_button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				content_viewpager.setCurrentItem(0);
+				button_viewpager.setCurrentItem(0);
+			}
+		});
 
 		// listview的item单击事件
 		listview.setOnItemClickListener(new OnItemClickListener() {
@@ -189,11 +282,11 @@ public class MainActivity extends Activity {
 							});
 				} else {// 如果长按的是个点
 					str.add("添加");
-					
+
 					objectlist = createMyAlertDialog(str);
 					listview_detail = (ListView) objectlist.get(0);
 					dialog = (AlertDialog) objectlist.get(1);
-					
+
 					listview_detail
 							.setOnItemClickListener(new OnItemClickListener() {
 								@Override
@@ -206,15 +299,26 @@ public class MainActivity extends Activity {
 								}
 							});
 				}
-				//使用下列语句可以自定义dialog的大小，但适配性很差很差
-				//WindowManager.LayoutParams params = dialog.getWindow()
-				//		.getAttributes();
-				//params.width = 300;		//设置alertdialog的长度和宽度
-				//params.height = 200;
-				//dialog.getWindow().setAttributes(params);
+				// 使用下列语句可以自定义dialog的大小，但适配性很差很差
+				// WindowManager.LayoutParams params = dialog.getWindow()
+				// .getAttributes();
+				// params.width = 300; //设置alertdialog的长度和宽度
+				// params.height = 200;
+				// dialog.getWindow().setAttributes(params);
 				return true;// 如果return false，则控件会响应长按和短按两个事件，true则长按会拦截短按，只响应长按
 			}
 		});
+	}
+
+	private void getMonthDiary() {
+		if(monthdiarylist==null){
+			monthdiarylist=new ArrayList<Diary>();
+		}else{
+			monthdiarylist.clear();
+		}
+		for(int i=0;i<diarylist.size();i++)
+			if(!diarylist.get(i).getContent().equals(""))
+				monthdiarylist.add(diarylist.get(i));
 	}
 
 	@Override
@@ -262,7 +366,7 @@ public class MainActivity extends Activity {
 					Toast.makeText(this, "Diary saved failed",
 							Toast.LENGTH_LONG).show();
 				}
-			} else {	//如果全部日记都是空的，则删除该月的日记文件
+			} else { // 如果全部日记都是空的，则删除该月的日记文件
 				File file = new File(getFilesDir().getPath() + "/"
 						+ year_button.getText() + month_button.getText());
 				if (file.exists())
@@ -299,8 +403,8 @@ public class MainActivity extends Activity {
 					objectout.close();
 					out.close();
 				} catch (Exception exp) {// 保存不了属于异常
-					//Toast.makeText(this, "Diary saved failed",
-					//		Toast.LENGTH_LONG).show();
+					// Toast.makeText(this, "Diary saved failed",
+					// Toast.LENGTH_LONG).show();
 				}
 			} else {// 如果没有日记内容，则不用保存，删掉本地文件
 				File file = new File(getFilesDir().getPath() + "/"
@@ -354,15 +458,6 @@ public class MainActivity extends Activity {
 			day = 30;
 		}
 		return day;
-	}
-
-	// 初始化按钮
-	private void initButton() {
-		new_button = (ImageButton) findViewById(R.id.activity_main_create_button);
-		month_button = (Button) findViewById(R.id.activity_main_month_button);
-		year_button = (Button) findViewById(R.id.activity_main_year_button);
-		view_button = (ImageButton) findViewById(R.id.activity_main_view_button);
-		setting_button = (ImageButton) findViewById(R.id.activity_main_setting_button);
 	}
 
 	// 根据传入的字符串集合创建一个含有listview的alertdialog，并用集合的方式返回listview和alertdialog以供之后操作
