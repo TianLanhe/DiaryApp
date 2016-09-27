@@ -18,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -40,8 +39,8 @@ public class MainActivity extends Activity {
 	private ImageButton new_button; // 新建/编辑当日日记的按钮
 	private Button month_button; // 月份按钮
 	private Button year_button; // 年份按钮
-	private Button view_button;// 切换另一视图的按钮
-	private Button setting_button;// 设置按钮
+	private ImageButton view_button;// 切换另一视图的按钮
+	private ImageButton setting_button;// 设置按钮
 	private String[] month = { "Jan", "Feb", "Mar", "Apr", "May", "June",
 			"July", "Aug", "Sept", "Oct", "Nov", "Dec" };
 
@@ -136,6 +135,7 @@ public class MainActivity extends Activity {
 						});
 			}
 		});
+		
 
 		// listview的item单击事件
 		listview.setOnItemClickListener(new OnItemClickListener() {
@@ -206,12 +206,12 @@ public class MainActivity extends Activity {
 								}
 							});
 				}
-				
-				WindowManager.LayoutParams params = dialog.getWindow()
-						.getAttributes();
-				params.width = 300;		//设置alertdialog的长度和宽度
-				params.height = 200;
-				dialog.getWindow().setAttributes(params);
+				//使用下列语句可以自定义dialog的大小，但适配性很差很差
+				//WindowManager.LayoutParams params = dialog.getWindow()
+				//		.getAttributes();
+				//params.width = 300;		//设置alertdialog的长度和宽度
+				//params.height = 200;
+				//dialog.getWindow().setAttributes(params);
 				return true;// 如果return false，则控件会响应长按和短按两个事件，true则长按会拦截短按，只响应长按
 			}
 		});
@@ -299,8 +299,8 @@ public class MainActivity extends Activity {
 					objectout.close();
 					out.close();
 				} catch (Exception exp) {// 保存不了属于异常
-					Toast.makeText(this, "Diary saved failed",
-							Toast.LENGTH_LONG).show();
+					//Toast.makeText(this, "Diary saved failed",
+					//		Toast.LENGTH_LONG).show();
 				}
 			} else {// 如果没有日记内容，则不用保存，删掉本地文件
 				File file = new File(getFilesDir().getPath() + "/"
@@ -361,8 +361,8 @@ public class MainActivity extends Activity {
 		new_button = (ImageButton) findViewById(R.id.activity_main_create_button);
 		month_button = (Button) findViewById(R.id.activity_main_month_button);
 		year_button = (Button) findViewById(R.id.activity_main_year_button);
-		view_button = (Button) findViewById(R.id.activity_main_view_button);
-		setting_button = (Button) findViewById(R.id.activity_main_setting_button);
+		view_button = (ImageButton) findViewById(R.id.activity_main_view_button);
+		setting_button = (ImageButton) findViewById(R.id.activity_main_setting_button);
 	}
 
 	// 根据传入的字符串集合创建一个含有listview的alertdialog，并用集合的方式返回listview和alertdialog以供之后操作

@@ -4,5 +4,7 @@
     <string name="app_name">DiaryPractice</string>
     <string name="line">/</string>
     <string name="description"></string>
+    <string name="time_button">Time</string>
+    <string name="save_button">Save</string>
 
 </resources>

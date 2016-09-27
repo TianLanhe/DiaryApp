@@ -61,45 +61,12 @@
             android:layout_weight="2" >
 
             <TextView
-                android:id="@+id/activity_edit_month_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textSize="13sp" />
+                android:id="@+id/activity_edit_title_textview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_centerInParent="true" />
 
-            <TextView
-                android:id="@+id/activity_edit_leftline_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@id/activity_edit_month_textview"
-                android:text="@string/line"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/activity_edit_week_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@id/activity_edit_leftline_textview"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/activity_edit_rightline_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/activity_edit_month_textview"
-                android:text="@string/line"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/activity_edit_year_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/activity_edit_rightline_textview"
-                android:textSize="13sp" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -142,7 +109,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:text="Time" />
+                android:text="@string/time_button" />
 
             <Button
                 android:id="@+id/activity_edit_save_button"
@@ -150,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text="Save" />
+                android:text="@string/save_button" />
         </RelativeLayout>
     </LinearLayout>
 

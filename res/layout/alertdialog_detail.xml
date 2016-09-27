@@ -3,50 +3,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ivory" >
-    
-    <ImageView
-        android:id="@+id/activity_edit_left_edge"
-        android:layout_width="5dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:contentDescription="@string/description"
-        android:scaleType="fitXY"
-        android:src="@drawable/left_edge" />
 
-    <ImageView
-        android:id="@+id/activity_edit_top_edge"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_alignParentTop="true"
-        android:contentDescription="@string/description"
-        android:scaleType="fitXY"
-        android:src="@drawable/top_edge" />
+    <!--
+     	本来打算好看一点，加个边框，但发现 alertdialog大小不会跟里面的布局契合，反正很难看
+        <ImageView
+            android:id="@+id/activity_edit_left_edge"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:contentDescription="@string/description"
+            android:scaleType="fitXY"
+            android:src="@drawable/left_edge" />
 
-    <ImageView
-        android:id="@+id/activity_edit_right_edge"
-        android:layout_width="5dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:contentDescription="@string/description"
-        android:scaleType="fitXY"
-        android:src="@drawable/right_edge" />
+        <ImageView
+            android:id="@+id/activity_edit_top_edge"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_alignParentTop="true"
+            android:contentDescription="@string/description"
+            android:scaleType="fitXY"
+            android:src="@drawable/top_edge" />
 
-    <ImageView
-        android:id="@+id/activity_edit_bottom_edge"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_alignParentBottom="true"
-        android:contentDescription="@string/description"
-        android:scaleType="fitXY"
-        android:src="@drawable/bottom_edge" />
+        <ImageView
+            android:id="@+id/activity_edit_right_edge"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:contentDescription="@string/description"
+            android:scaleType="fitXY"
+            android:src="@drawable/right_edge" />
+
+        <ImageView
+            android:id="@+id/activity_edit_bottom_edge"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_alignParentBottom="true"
+            android:contentDescription="@string/description"
+            android:scaleType="fitXY"
+            android:src="@drawable/bottom_edge" />
+    -->
 
     <ListView
         android:id="@+id/alertdialog_detail_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/activity_edit_bottom_edge"
-        android:layout_below="@id/activity_edit_top_edge"
-        android:layout_toLeftOf="@id/activity_edit_right_edge"
-        android:layout_toRightOf="@id/activity_edit_left_edge" />
+         />
 
 </RelativeLayout>

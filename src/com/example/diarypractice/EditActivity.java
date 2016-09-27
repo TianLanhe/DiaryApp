@@ -7,12 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
 /*********
  * 
  * @author 何振宇
@@ -21,9 +24,7 @@ import android.widget.TextView;
  */
 public class EditActivity extends Activity {
 	private Diary diary;// 日记实体类
-	private TextView week_textview;
-	private TextView month_and_date_textview;
-	private TextView year_textview;
+	private TextView title_textview;
 	private EditText edittext;
 	private Button save_button;// 保存按钮
 	private Button time_button;// 时间按钮
@@ -49,15 +50,17 @@ public class EditActivity extends Activity {
 				onBackPressed();
 			}
 		});
-		
+
 		time_button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Calendar calendar=Calendar.getInstance();
-				int hour=calendar.get(Calendar.HOUR);
-				int minute=calendar.get(Calendar.MINUTE);
-				String am_pm=calendar.get(Calendar.AM_PM)==0?" am ":" pm ";
-				edittext.getText().insert(edittext.getSelectionStart(), " "+hour+":"+minute+am_pm);
+				Calendar calendar = Calendar.getInstance();
+				int hour = calendar.get(Calendar.HOUR);
+				int minute = calendar.get(Calendar.MINUTE);
+				String am_pm = calendar.get(Calendar.AM_PM) == 0 ? " am "
+						: " pm ";
+				edittext.getText().insert(edittext.getSelectionStart(),
+						" " + hour + ":" + minute + am_pm);
 			}
 		});
 	}
@@ -87,19 +90,22 @@ public class EditActivity extends Activity {
 		Intent intent = getIntent();
 		diary = (Diary) intent.getSerializableExtra("editdiary");// 取出传过来的Diary对象
 
-		week_textview = (TextView) findViewById(R.id.activity_edit_week_textview);
-		month_and_date_textview = (TextView) findViewById(R.id.activity_edit_month_textview);
-		year_textview = (TextView) findViewById(R.id.activity_edit_year_textview);
+		title_textview = (TextView) findViewById(R.id.activity_edit_title_textview);
 		edittext = (EditText) findViewById(R.id.activity_edit_edittext);
 		save_button = (Button) findViewById(R.id.activity_edit_save_button);
 		time_button = (Button) findViewById(R.id.activity_edit_time_button);
 
-		week_textview.setText(week[diary.getWeek()]);
-		if (diary.getWeek() == 0 || diary.getWeek() == 6)
-			week_textview.setTextColor(Color.RED);
-		month_and_date_textview.setText(month[diary.getMonth() - 1] + " "
-				+ String.valueOf(diary.getDate()));
-		year_textview.setText(String.valueOf(diary.getYear()));
+		title_textview.setText(week[diary.getWeek()] + "/"
+				+ month[diary.getMonth() - 1] + " "
+				+ String.valueOf(diary.getDate()) + "/"
+				+ String.valueOf(diary.getYear()));
+		if(diary.getWeek()==0 || diary.getWeek()==6){
+			String text= title_textview.getText().toString();
+			SpannableStringBuilder builder=new SpannableStringBuilder(text);
+			ForegroundColorSpan colorspan=new ForegroundColorSpan(Color.RED);
+			builder.setSpan(colorspan,0,text.indexOf("/"),SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+			title_textview.setText(builder);
+		}
 		edittext.setText(diary.getContent());
 		edittext.setSelection(edittext.getText().length());// 设置edittext的光标指向文本末尾
 	}

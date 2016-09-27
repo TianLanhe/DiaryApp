@@ -11,13 +11,15 @@
     <!-- 布局颜色要跟listview边框颜色相同 -->
     <!-- 上左右留白使其不紧贴屏幕 -->
 
-    <ListView
-        android:id="@+id/activity_main_diary_listview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="9"
-        android:divider="@null"
-        android:scrollbars="@null" />
+
+        <ListView
+            android:id="@+id/activity_main_diary_listview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9"
+            android:divider="@null"
+            android:scrollbars="@null" />
+
     <!-- 取消分割线divider和滚动条scrollbars -->
 
     <RelativeLayout
@@ -38,7 +40,7 @@
             android:padding="15dp"
             android:scaleType="centerInside"
             android:src="@drawable/new_button" />
-        
+
         <!-- 设置此按钮在中间，其他控件围绕它 -->
         <!-- padding留白使图形不至于紧贴按钮显示得太大 -->
         <!-- android:contentDescription属性设置停留在图片时显示的文字内容 -->
