@@ -58,6 +58,7 @@
         </LinearLayout>
 
         <RelativeLayout
+            android:id="@+id/diary_content_layout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="1dp"
@@ -81,6 +82,17 @@
                 android:singleLine="true"
                 android:textSize="15sp" />
             <!-- 单行显示省略结尾 -->
+            
+            <ImageView
+                android:id="@+id/listview_lock_imageview"
+                android:contentDescription="@string/description"
+                android:src="@drawable/lock"
+                android:layout_width="30dp"
+        		android:layout_height="27dp"
+        		android:layout_centerInParent="true"
+                android:scaleType="centerInside"
+                
+                />
         </RelativeLayout>
     </LinearLayout>
 

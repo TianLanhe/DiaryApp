@@ -118,6 +118,18 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:text="@string/save_button" />
+            
+            <ToggleButton 
+                android:id="@+id/activity_edit_lock_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:textOn=""
+                android:textOff=""
+                android:checked="false"
+                android:background="@drawable/unlock"
+                />
         </RelativeLayout>
     </LinearLayout>
 

@@ -61,6 +61,8 @@ public class DiaryAdapter extends ArrayAdapter<Diary> {
 						.findViewById(R.id.listview_date_textview);
 				viewholder_diary.textview_week = (TextView) view
 						.findViewById(R.id.listview_week_textview);
+				viewholder_diary.imageview_lock = (ImageView) view
+						.findViewById(R.id.listview_lock_imageview);
 				view.setTag(viewholder_diary);
 			}
 		} else {// 如果与上次布局相同，则加载缓冲布局，使用viewholder的控件
@@ -80,7 +82,13 @@ public class DiaryAdapter extends ArrayAdapter<Diary> {
 				viewholder_point.imageview_point
 						.setColorFilter(Color.BLACK);
 		}else{//如果是日记布局，则设置年月日与内容并根据星期改变日期颜色
-			viewholder_diary.textview_content.setText(diary.getContent());
+			if(diary.getFlag()){
+				viewholder_diary.textview_content.setText("");
+				viewholder_diary.imageview_lock.setVisibility(View.VISIBLE);
+			}else{
+				viewholder_diary.textview_content.setText(diary.getContent());
+				viewholder_diary.imageview_lock.setVisibility(View.GONE);
+			}
 			viewholder_diary.textview_date.setText(String.valueOf(diary
 					.getDate()));
 			viewholder_diary.textview_week
@@ -98,6 +106,7 @@ class ViewHolder_Diary {
 	TextView textview_week;
 	TextView textview_date;
 	TextView textview_content;
+	ImageView imageview_lock;
 }
 
 class ViewHolder_Point {

@@ -2,20 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ivory"
-    android:orientation="vertical"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingTop="10dp" >
+    android:orientation="vertical" >
 
     <!-- 布局颜色要跟listview边框颜色相同 -->
     <!-- 上左右留白使其不紧贴屏幕 -->
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/activity_main_viewpager"
+    <ListView
+        android:id="@+id/activity_main_setting_listview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-		/>
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:scrollbars="@null" />
 
 
 

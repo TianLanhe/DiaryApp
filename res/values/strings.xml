@@ -6,5 +6,9 @@
     <string name="description"></string>
     <string name="time_button">Time</string>
     <string name="save_button">Save</string>
+    <string name="password_hint">请输入密码</string>
+    <string name="password_text">密码:</string>
+    <string name="password_repeat">确认密码:</string>
+    <string name="password_hint_repeat">请再次输入密码</string>
 
 </resources>

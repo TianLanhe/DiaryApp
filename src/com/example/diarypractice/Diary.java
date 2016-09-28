@@ -8,6 +8,7 @@ public class Diary implements Serializable {
 	private int year;
 	private int date;
 	private int week; // 0表示周日，1表示周一，以此类推
+	private boolean flag; // 是否加锁
 	private String content;
 
 	Diary() {
@@ -20,6 +21,7 @@ public class Diary implements Serializable {
 		this.date = date;
 		this.week = countWeek();
 		this.content = "";
+		this.flag=false;
 	}
 
 	Diary(int year, int month, int date, String string) {
@@ -28,6 +30,7 @@ public class Diary implements Serializable {
 		this.date = date;
 		this.week = countWeek();
 		this.content = string;
+		this.flag=false;
 	}
 
 	public int countWeek() {
@@ -74,5 +77,12 @@ public class Diary implements Serializable {
 
 	public int getWeek() {
 		return week;
+	}
+	
+	public void setFlag(boolean flag){
+		this.flag=flag;
+	}
+	public boolean getFlag(){
+		return flag;
 	}
 }
