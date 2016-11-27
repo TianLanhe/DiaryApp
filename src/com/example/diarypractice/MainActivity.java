@@ -5,10 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,9 +18,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -28,6 +33,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
 /*********
@@ -39,7 +47,6 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	private ListView listview; // 列表控件
 	private ListView view_listview;
-	private ListView setting_listview;
 
 	private List<Diary> monthdiarylist = null; // 当月的日记详细内容
 	private List<Diary> diarylist = null; // 一个月的日记内容
@@ -56,13 +63,16 @@ public class MainActivity extends Activity {
 
 	private ViewPager viewpager;
 
+	private RadioGroup radiogroup;
+	private RadioButton radiobutton[];
+
 	private View diary_list_view; // 标准日记视图
-	private View setting_list_view; // 设置视图
 	private View month_diary_list_view; // 当月日记视图
 
 	private String[] month = { "Jan", "Feb", "Mar", "Apr", "May", "June",
 			"July", "Aug", "Sept", "Oct", "Nov", "Dec" };
 
+	@SuppressLint("InflateParams")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -77,18 +87,11 @@ public class MainActivity extends Activity {
 				R.layout.viewpager_main, null);
 		month_diary_list_view = LayoutInflater.from(this).inflate(
 				R.layout.viewpager_view, null);
-		setting_list_view = LayoutInflater.from(this).inflate(
-				R.layout.viewpager_setting, null);
 
 		// viewpager的list初始化并添加内容
 		viewlist = new ArrayList<View>();
 		viewlist.add(month_diary_list_view);
 		viewlist.add(diary_list_view);
-		viewlist.add(setting_list_view);
-
-		// viewpager设置适配器，传入list，设置viewpager指向初始的标准操作视图
-		viewpager.setAdapter(new MyPagerAdapter(viewlist));
-		viewpager.setCurrentItem(1);
 
 		listview = (ListView) diary_list_view
 				.findViewById(R.id.activity_main_diary_listview);
@@ -106,7 +109,21 @@ public class MainActivity extends Activity {
 		view_listview = (ListView) month_diary_list_view
 				.findViewById(R.id.activity_main_view_listview);
 
-		// diarylist = null; //已在成员变量定义时初始化
+		radiogroup = (RadioGroup) month_diary_list_view
+				.findViewById(R.id.radg_month_radg);
+		radiobutton = new RadioButton[12];
+		for (int i = 0; i < 12; ++i) {
+			try {
+				Field field = R.id.class.getDeclaredField("btn_month_" + i);
+				int id = field.getInt(R.id.class);
+				radiobutton[i] = (RadioButton) month_diary_list_view
+						.findViewById(id);
+				radiobutton[i].setText(month[i].substring(0, 3));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		initDiaryList();// 读取当日的日期并设置按钮，读取当月的日记
 
 		// 设置listview，设置分割线为null，即无分割线，也可在xml里android:divider="@null"
@@ -114,10 +131,104 @@ public class MainActivity extends Activity {
 				R.layout.listview_point, diarylist);
 		listview.setAdapter(diaryadapter);
 
-		getMonthDiary();
+		initMonthDiary();
 		monthdiaryadapter = new MonthDiaryAdapter(this,
 				R.layout.listview_detail, monthdiarylist);
 		view_listview.setAdapter(monthdiaryadapter);
+
+		// 月份选择单击事件
+		radiogroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onCheckedChanged(RadioGroup arg0, int arg1) {
+				List<Diary> temp;
+
+				if (monthdiarylist == null)
+					monthdiarylist = new ArrayList<Diary>();
+				else
+					monthdiarylist.clear();
+
+				String button_text = ((RadioButton) arg0.findViewById(arg1))
+						.getText().toString();
+				if (button_text.equals("Jun"))
+					button_text = "June";
+				else if (button_text.equals("Jul"))
+					button_text = "July";
+				else if (button_text.equals("Sep"))
+					button_text = "Sept";
+
+				// 如果是当月，则直接在内存读取
+				if (button_text.equals(month_button.getText().toString())) {
+					for (int i = 0; i < diarylist.size(); i++)
+						if (!diarylist.get(i).getContent().equals(""))
+							monthdiarylist.add(diarylist.get(i));
+				} else {// 否则，到外存读取
+					try {
+						FileInputStream in;
+						ObjectInputStream objectin;
+						in = openFileInput(year_button.getText() + ""
+								+ button_text);
+						objectin = new ObjectInputStream(in);
+
+						temp = (List<Diary>) objectin.readObject();
+
+						for (int i = 0; i < temp.size(); i++)
+							if (!temp.get(i).getContent().equals(""))
+								monthdiarylist.add(temp.get(i));
+					} catch (Exception exp) {
+						// 该月没有日记，列表为空
+					}
+				}
+				monthdiaryadapter.notifyDataSetChanged();
+			}
+		});
+
+		// viewpager设置适配器，传入list，设置viewpager指向初始的标准操作视图
+		viewpager.setAdapter(new PagerAdapter() {
+			@Override
+			public int getCount() {
+				return viewlist.size();
+			}
+
+			@Override
+			public boolean isViewFromObject(View arg0, Object arg1) {
+				return arg0 == arg1;
+			}
+
+			@Override
+			public void destroyItem(ViewGroup container, int position,
+					Object object) {
+				((ViewPager) container).removeView(viewlist.get(position));
+			}
+
+			@Override
+			public Object instantiateItem(ViewGroup container, int position) {
+				((ViewPager) container).addView(viewlist.get(position));
+				return viewlist.get(position);
+			}
+		});
+		viewpager.setCurrentItem(1);
+		viewpager.setOnPageChangeListener(new OnPageChangeListener() {
+
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+			}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+
+			@Override
+			public void onPageSelected(int arg0) {
+				if (arg0 == 0) {
+					int i;
+					for (i = 0; i < 12; ++i)
+						if (month[i].equals(month_button.getText()))
+							break;
+					radiobutton[i].setChecked(true);
+				}
+			}
+		});
 
 		// new按钮单击事件
 		new_button.setOnClickListener(new OnClickListener() {
@@ -195,19 +306,20 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		// setting按钮单击事件
-		setting_button.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				viewpager.setCurrentItem(2);
-			}
-		});
-
 		// 视图切换按钮单击事件
 		view_button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				viewpager.setCurrentItem(0);
+			}
+		});
+
+		setting_button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				// TODO
+				Toast.makeText(MainActivity.this, "设置", Toast.LENGTH_SHORT)
+						.show();
 			}
 		});
 
@@ -319,6 +431,7 @@ public class MainActivity extends Activity {
 														int arg1) {
 												}
 											};
+											// 创建输入密码对话框
 											EditActivity.showLockAlertDialog(
 													MainActivity.this, "请输入密码",
 													view1, positivelistener,
@@ -331,6 +444,8 @@ public class MainActivity extends Activity {
 																	.get(long_click_position));
 										}
 									} else if (position == 1) {// 删除操作
+										diarylist.get(long_click_position)
+												.setFlag(false);
 										diarylist.get(long_click_position)
 												.setContent("");// 不能用diarylist.remove(int
 																// index)，只需要清空content即可
@@ -453,33 +568,28 @@ public class MainActivity extends Activity {
 								}
 							});
 				}
-				// 使用下列语句可以自定义dialog的大小，但适配性很差很差
-				// WindowManager.LayoutParams params = dialog.getWindow()
-				// .getAttributes();
-				// params.width = 300; //设置alertdialog的长度和宽度
-				// params.height = 200;
-				// dialog.getWindow().setAttributes(params);
 				return true;// 如果return false，则控件会响应长按和短按两个事件，true则长按会拦截短按，只响应长按
 			}
 		});
 	}
 
-	private void getMonthDiary() {
-		if (monthdiarylist == null) {
+	private void initMonthDiary() {
+		if (monthdiarylist == null)
 			monthdiarylist = new ArrayList<Diary>();
-		} else {
+		else
 			monthdiarylist.clear();
-		}
 		for (int i = 0; i < diarylist.size(); i++)
 			if (!diarylist.get(i).getContent().equals(""))
 				monthdiarylist.add(diarylist.get(i));
 	}
 
+	// 检查输入的密码是否与该月已设置的密码相同
 	private boolean checkPassword(String password, Diary diary) {
 		SharedPreferences pref = getSharedPreferences("password", MODE_PRIVATE);
-		if (password.equals(pref.getString(
+		String correct_password = pref.getString(
 				diary.getYear() + "/" + diary.getMonth() + "/"
-						+ diary.getDate(), "")))
+						+ diary.getDate(), "");
+		if (password.equals(correct_password))
 			return true;
 		else
 			return false;
@@ -540,12 +650,14 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	// 初始化日期，指示当前年月并显示该月日记内容
 	private void initDiaryList() {
 		Calendar calendar = Calendar.getInstance();
 		changeDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH));
 	}
 
 	// 改变日期时的操作
+	@SuppressWarnings("unchecked")
 	public void changeDate(int year, int month) {
 		// 如果日记列表不为空，则查看里面是否有内容，有则保存到文件，没有则删除文件
 		if (diarylist != null) {
@@ -626,6 +738,7 @@ public class MainActivity extends Activity {
 	}
 
 	// 根据传入的字符串集合创建一个含有listview的alertdialog，并用集合的方式返回listview和alertdialog以供之后操作
+	@SuppressLint("InflateParams")
 	public List<Object> createMyAlertDialog(List<String> strlist) {
 		List<Object> objectlist = new ArrayList<Object>();
 		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);

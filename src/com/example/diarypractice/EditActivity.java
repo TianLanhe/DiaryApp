@@ -2,6 +2,7 @@ package com.example.diarypractice;
 
 import java.util.Calendar;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -48,6 +49,7 @@ public class EditActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);// 取消屏幕顶标题栏
 		setContentView(R.layout.activity_edit); // 加载日记详情布局
+
 		initDiary();
 
 		// 保存按钮做的只是将edittext的内容存储到成员变量diary中，在退出时将diary保存到之前的日记中
@@ -60,6 +62,7 @@ public class EditActivity extends Activity {
 			}
 		});
 
+		// 添加当前时间
 		time_button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -72,37 +75,50 @@ public class EditActivity extends Activity {
 						" " + hour + ":" + minute + am_pm);
 			}
 		});
-		
-		lock_button.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+		// 加锁或解锁按钮
+		lock_button.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@SuppressLint("InflateParams")
 			@Override
-			public void onCheckedChanged(CompoundButton button, boolean isChecked) {
-				if(isChecked){
-					String title="设置密码";
-					final View view=LayoutInflater.from(EditActivity.this).inflate(R.layout.alertdialog_lock, null);
-					DialogInterface.OnClickListener positivelistener=new DialogInterface.OnClickListener(){
+			public void onCheckedChanged(CompoundButton button,
+					boolean isChecked) {
+				if (isChecked) {
+					String title = "设置密码";
+					final View view = LayoutInflater.from(EditActivity.this)
+							.inflate(R.layout.alertdialog_lock, null);
+					DialogInterface.OnClickListener positivelistener = new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							EditText password=(EditText) view.findViewById(R.id.alertdialog_lock_password_edittext);
-							EditText password_repeat=(EditText) view.findViewById(R.id.alertdialog_lock_repeat_password_edittext);
-							if(savePassword(EditActivity.this,password.getText().toString(),password_repeat.getText().toString(),diary)){
+							EditText password = (EditText) view
+									.findViewById(R.id.alertdialog_lock_password_edittext);
+							EditText password_repeat = (EditText) view
+									.findViewById(R.id.alertdialog_lock_repeat_password_edittext);
+							if (savePassword(EditActivity.this, password
+									.getText().toString(), password_repeat
+									.getText().toString(), diary)) {
 								diary.setFlag(true);
-								lock_button.setBackgroundResource(R.drawable.lock);
-							}else{
-								Toast.makeText(EditActivity.this, "密码输入错误，设置失败", Toast.LENGTH_SHORT).show();
+								lock_button
+										.setBackgroundResource(R.drawable.lock);
+							} else {
+								Toast.makeText(EditActivity.this,
+										"密码输入错误，设置失败", Toast.LENGTH_SHORT)
+										.show();
 								lock_button.setChecked(false);
 							}
 						}
 					};
-					DialogInterface.OnClickListener negativelistener=new DialogInterface.OnClickListener(){
+					DialogInterface.OnClickListener negativelistener = new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							lock_button.setBackgroundResource(R.drawable.unlock);
+							lock_button
+									.setBackgroundResource(R.drawable.unlock);
 							lock_button.setChecked(false);
 						}
 					};
-					
-					showLockAlertDialog(EditActivity.this,title,view,positivelistener,negativelistener);
-				}else{
+
+					showLockAlertDialog(EditActivity.this, title, view,
+							positivelistener, negativelistener);
+				} else {
 					button.setBackgroundResource(R.drawable.unlock);
 					diary.setFlag(false);
 				}
@@ -111,9 +127,11 @@ public class EditActivity extends Activity {
 
 	}
 
-	//传入标题，布局，确定按钮监听器，取消按钮监听器，创建一个alertdialog并显示
-	public static void showLockAlertDialog(Context context,String title,View view,DialogInterface.OnClickListener positivelistener,DialogInterface.OnClickListener negativelistener){
-		AlertDialog.Builder builder=new AlertDialog.Builder(context);
+	// 传入标题，布局，确定按钮监听器，取消按钮监听器，创建一个alertdialog并显示
+	public static void showLockAlertDialog(Context context, String title,
+			View view, DialogInterface.OnClickListener positivelistener,
+			DialogInterface.OnClickListener negativelistener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setView(view);
@@ -121,19 +139,22 @@ public class EditActivity extends Activity {
 		builder.setNegativeButton("取消", negativelistener);
 		builder.show();
 	}
-	
-	public static boolean savePassword(Context context,String password,String password_repeat,Diary diary){
-		if(!password.equals("")&&password.equals(password_repeat)){
-			SharedPreferences.Editor editor=context.getSharedPreferences("password", MODE_PRIVATE).edit();
-			editor.putString(diary.getYear()+"/"+diary.getMonth()+"/"+diary.getDate(), password);
+
+	// 保存密码到外存
+	public static boolean savePassword(Context context, String password,
+			String password_repeat, Diary diary) {
+		if (!password.equals("") && password.equals(password_repeat)) {
+			SharedPreferences.Editor editor = context.getSharedPreferences(
+					"password", MODE_PRIVATE).edit();
+			editor.putString(diary.getYear() + "/" + diary.getMonth() + "/"
+					+ diary.getDate(), password);
 			editor.commit();
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	
+
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent();
@@ -143,7 +164,7 @@ public class EditActivity extends Activity {
 	}
 
 	// 单纯地启动这个activity
-	public static void startEditActivity(Context context, Diary diary) {
+	public static void startEditActivity(Activity context) {
 		Intent intent = new Intent(context, EditActivity.class);
 		context.startActivity(intent);
 	}
@@ -179,10 +200,10 @@ public class EditActivity extends Activity {
 		}
 		edittext.setText(diary.getContent());
 		edittext.setSelection(edittext.getText().length());// 设置edittext的光标指向文本末尾
-		if(diary.getFlag()){
+		if (diary.getFlag()) {
 			lock_button.setChecked(true);
 			lock_button.setBackgroundResource(R.drawable.lock);
-		}else{
+		} else {
 			lock_button.setChecked(false);
 			lock_button.setBackgroundResource(R.drawable.unlock);
 		}

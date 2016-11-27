@@ -72,27 +72,26 @@ public class DiaryAdapter extends ArrayAdapter<Diary> {
 			else
 				viewholder_point = (ViewHolder_Point) view.getTag();
 		}
-		//对布局里的控件进行处理
-		//如果是点布局，则根据星期改变点的颜色
-		if(diary.getContent().equals("")){
+		// 对布局里的控件进行处理
+		// 如果是点布局，则根据星期改变点的颜色
+		if (diary.getContent().equals("")) {
 			if (diary.getWeek() == 0 || diary.getWeek() == 6)
 				// setColorFilter设置图片渲染色，相当于加了一层遮罩
 				viewholder_point.imageview_point.setColorFilter(Color.RED);
 			else
-				viewholder_point.imageview_point
-						.setColorFilter(Color.BLACK);
-		}else{//如果是日记布局，则设置年月日与内容并根据星期改变日期颜色
-			if(diary.getFlag()){
+				viewholder_point.imageview_point.setColorFilter(Color.BLACK);
+		} else {// 如果是日记布局，则设置年月日与内容并根据星期改变日期颜色
+			if (diary.getFlag()) {
 				viewholder_diary.textview_content.setText("");
 				viewholder_diary.imageview_lock.setVisibility(View.VISIBLE);
-			}else{
+			} else {
 				viewholder_diary.textview_content.setText(diary.getContent());
 				viewholder_diary.imageview_lock.setVisibility(View.GONE);
 			}
+
 			viewholder_diary.textview_date.setText(String.valueOf(diary
 					.getDate()));
-			viewholder_diary.textview_week
-					.setText(weekday[diary.getWeek()]);
+			viewholder_diary.textview_week.setText(weekday[diary.getWeek()]);
 			if (diary.getWeek() == 0 || diary.getWeek() == 6)
 				viewholder_diary.textview_date.setTextColor(Color.RED);
 			else

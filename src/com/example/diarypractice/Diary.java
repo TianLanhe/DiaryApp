@@ -3,6 +3,7 @@ package com.example.diarypractice;
 import java.io.Serializable;
 import java.util.Calendar;
 
+@SuppressWarnings("serial")
 public class Diary implements Serializable {
 	private int month; // 1表示1月，2表示2月，以此类推
 	private int year;
@@ -10,10 +11,6 @@ public class Diary implements Serializable {
 	private int week; // 0表示周日，1表示周一，以此类推
 	private boolean flag; // 是否加锁
 	private String content;
-
-	Diary() {
-
-	}
 
 	Diary(int year, int month, int date) {
 		this.year = year;
