@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
 	private ListView listview; // 列表控件
 	private ListView view_listview;
 
-	private List<Diary> monthdiarylist = null; // 当月的日记详细内容
+	private List<Diary> monthdiarylist = new ArrayList<Diary>(); // 当月的日记详细内容
 	private List<Diary> diarylist = null; // 一个月的日记内容
 	private List<View> viewlist; // 上面主视图的三个布局
 
@@ -143,10 +143,7 @@ public class MainActivity extends Activity {
 			public void onCheckedChanged(RadioGroup arg0, int arg1) {
 				List<Diary> temp;
 
-				if (monthdiarylist == null)
-					monthdiarylist = new ArrayList<Diary>();
-				else
-					monthdiarylist.clear();
+				monthdiarylist.clear();
 
 				String button_text = ((RadioButton) arg0.findViewById(arg1))
 						.getText().toString();
@@ -220,12 +217,21 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onPageSelected(int arg0) {
+				monthdiaryadapter.notifyDataSetChanged();
 				if (arg0 == 0) {
 					int i;
 					for (i = 0; i < 12; ++i)
 						if (month[i].equals(month_button.getText()))
 							break;
-					radiobutton[i].setChecked(true);
+					if(!radiobutton[i].isChecked())
+						radiobutton[i].setChecked(true);
+					else{ // 更新一下 monthdiarylist 和  monthdiaryadapter
+						monthdiarylist.clear();
+						for (i = 0; i < diarylist.size(); i++)
+							if (!diarylist.get(i).getContent().equals(""))
+								monthdiarylist.add(diarylist.get(i));
+						monthdiaryadapter.notifyDataSetChanged();
+					}
 				}
 			}
 		});
@@ -239,9 +245,36 @@ public class MainActivity extends Activity {
 				changeDate(calendar.get(Calendar.YEAR),
 						calendar.get(Calendar.MONTH));
 				listview.setSelection(calendar.get(Calendar.DATE) - 1);// 设置listview当天的item
-				Diary diary = diarylist.get(calendar.get(Calendar.DATE) - 1);
-				EditActivity.startEditActivityForResult(MainActivity.this,
-						diary);
+				final Diary diary = diarylist.get(calendar.get(Calendar.DATE) - 1);
+
+				if (diary.getFlag()) {
+					final View view1 = LayoutInflater.from(MainActivity.this)
+							.inflate(R.layout.alertdialog_unlock, null);
+					DialogInterface.OnClickListener positivelistener = new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							EditText password = (EditText) view1
+									.findViewById(R.id.alertdialog_unlock_password_edittext);
+							if (checkPassword(password.getText().toString(),
+									diary)) {
+								EditActivity.startEditActivityForResult(
+										MainActivity.this, diary);
+							} else {
+								Toast.makeText(MainActivity.this, "密码错误",
+										Toast.LENGTH_SHORT).show();
+							}
+						}
+					};
+					DialogInterface.OnClickListener negativelistener = new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+						}
+					};
+					EditActivity.showLockAlertDialog(MainActivity.this,
+							"请输入密码", view1, positivelistener, negativelistener);
+				} else
+					EditActivity.startEditActivityForResult(MainActivity.this,
+							diary);
 			}
 		});
 
@@ -320,6 +353,43 @@ public class MainActivity extends Activity {
 				// TODO
 				Toast.makeText(MainActivity.this, "设置", Toast.LENGTH_SHORT)
 						.show();
+			}
+		});
+
+		// view_listview的item单击事件
+		view_listview.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				final Diary diary = monthdiarylist.get(position);
+				if (diary.getFlag()) {
+					final View view1 = LayoutInflater.from(MainActivity.this)
+							.inflate(R.layout.alertdialog_unlock, null);
+					DialogInterface.OnClickListener positivelistener = new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							EditText password = (EditText) view1
+									.findViewById(R.id.alertdialog_unlock_password_edittext);
+							if (checkPassword(password.getText().toString(),
+									diary)) {
+								EditActivity.startEditActivityForResult(
+										MainActivity.this, diary);
+							} else {
+								Toast.makeText(MainActivity.this, "密码错误",
+										Toast.LENGTH_SHORT).show();
+							}
+						}
+					};
+					DialogInterface.OnClickListener negativelistener = new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+						}
+					};
+					EditActivity.showLockAlertDialog(MainActivity.this,
+							"请输入密码", view1, positivelistener, negativelistener);
+				} else
+					EditActivity.startEditActivityForResult(MainActivity.this,
+							diary);
 			}
 		});
 
@@ -606,6 +676,7 @@ public class MainActivity extends Activity {
 				diarylist.get(temp.getDate() - 1).setContent(temp.getContent());
 				diarylist.get(temp.getDate() - 1).setFlag(temp.getFlag());
 				diaryadapter.notifyDataSetChanged();
+				monthdiaryadapter.notifyDataSetChanged();
 			} else
 				Toast.makeText(this, "onActivityResult error!",
 						Toast.LENGTH_SHORT).show();

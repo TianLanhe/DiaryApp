@@ -40,7 +40,12 @@ public class MonthDiaryAdapter extends ArrayAdapter<Diary> {
 			viewholder = (ViewHolder) view.getTag();
 		}
 		viewholder.textview.setText(diary.getDate() + " "
-				+ week[diary.getWeek()] + " / " + diary.getContent());
+				+ week[diary.getWeek()] + " / ");
+		if(!diary.getFlag()){
+			viewholder.textview.append(diary.getContent());
+		}else{
+			viewholder.textview.append("已加锁，请解锁查看");
+		}
 		if (diary.getWeek() == 0 || diary.getWeek() == 6) {
 			String text = viewholder.textview.getText().toString();
 			SpannableStringBuilder builder = new SpannableStringBuilder(text);
